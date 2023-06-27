@@ -3,6 +3,6 @@ package common
 import data.abbey.functions
 
 allow[msg] {
-    functions.expire_after("8h")
-    msg := "granting access for 8 hours"
+    functions.expire_after("24h")
+    msg := "granting access for 24 hours"
 }
