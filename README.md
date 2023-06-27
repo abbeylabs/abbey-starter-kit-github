@@ -2,7 +2,7 @@
 
 This example shows how to create a Grant Kit.
 The example features requesting access to a [GitHub Team Membership](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/team_membership)
-from multiple reviewers, requiring only `all_of` the reviewers to approve the access and has an expiration of 24 hours.
+from multiple reviewers, requiring only `one_of` the reviewers to approve the access and has an expiration of 24 hours.
 
 ## Usage
 
