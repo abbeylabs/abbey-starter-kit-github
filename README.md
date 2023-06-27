@@ -6,7 +6,7 @@ from multiple reviewers, requiring only `all_of` the reviewers to approve the ac
 
 ## Usage
 
-Visit this [Starter Kit's docs](todo) for a short usage walkthrough.
+Visit this [Starter Kit's docs](https://docs.abbey.io/integrations/infrastructure/github) for a short usage walkthrough.
 
 ## :books: Learn More
 

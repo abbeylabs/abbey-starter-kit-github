@@ -25,7 +25,13 @@ provider "abbey" {
 }
 
 provider "github" {
+  owner = "abbeylabs"
   token = var.token
+}
+
+resource "github_team" "pii_team" {
+  name = "PIITeam"
+  description = "This team has access to PII data."
 }
 
 resource "abbey_grant_kit" "engineering_pii_github_team" {
@@ -41,7 +47,7 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
       {
         reviewers = {
           # Replace with your Abbey login, typically your email used to sign up.
-          all_of = ["replace-me@example.com", "replace-me@example.com"]
+          one_of = ["replace-me@example.com"]
         }
       }
     ]
@@ -58,7 +64,7 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
         #
         # Otherwise you can specify the directory. Abbey will build an
         # OPA bundle for you and recursively add all your policies.
-        bundle = "github://organization/repo/policies/common"
+        bundle = "github://organization/repo/policies"
       }
     ]
   }
@@ -68,8 +74,8 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
     # Path is an RFC 3986 URI, such as `github://{organization}/{repo}/path/to/file.tf`.
     location = "github://organization/repo/access.tf"
     append = <<-EOT
-      resource "github_membership" "gh_mem_{{ .data.system.abbey.secondary_identities.github.username }}" {
-        team_id = "team-tf-id-or-team-slug"
+      resource "github_team_membership" "gh_mem_{{ .data.system.abbey.secondary_identities.github.username }}" {
+        team_id = github_team.pii_team.id
         username = "{{ .data.system.abbey.secondary_identities.github.username }}"
         role = "member"
       }
@@ -90,7 +96,7 @@ resource "abbey_identity" "user_1" {
 
     github = [
       {
-        username = "replace-me"
+        username = "replaceme"
       }
     ]
   })
