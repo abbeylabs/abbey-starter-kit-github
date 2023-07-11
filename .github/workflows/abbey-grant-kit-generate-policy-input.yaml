@@ -6,7 +6,8 @@ jobs:
   output-plan:
     runs-on: ubuntu-latest
     env:
-      ABBEY_TOKEN: ${{ secrets.ABBEY_TOKEN }}
+      TF_VAR_abbey_token: ${{ secrets.ABBEY_TOKEN }}
+      TF_VAR_token: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,7 +24,6 @@ jobs:
         env:
           TF_HTTP_USERNAME: starter-kit
           TF_HTTP_PASSWORD: ${{ secrets.ABBEY_TOKEN }}
-          TF_VAR_token: ${{ secrets.GH_TOKEN }}
 
       - name: Terraform Plan
         id: plan
@@ -31,7 +31,6 @@ jobs:
         env:
           TF_HTTP_USERNAME: starter-kit
           TF_HTTP_PASSWORD: ${{ secrets.ABBEY_TOKEN }}
-          TF_VAR_token: ${{ secrets.GH_TOKEN }}
 
       - name: Terraform Show
         id: show

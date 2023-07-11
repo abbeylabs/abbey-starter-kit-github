@@ -1,16 +1,16 @@
 terraform {
-  backend "http" {
-    address        = "https://api.abbey.io/terraform-http-backend"
-    lock_address   = "https://api.abbey.io/terraform-http-backend/lock"
-    unlock_address = "https://api.abbey.io/terraform-http-backend/unlock"
-    lock_method    = "POST"
-    unlock_method  = "POST"
-  }
+#  backend "http" {
+#    address        = "https://api.abbey.io/terraform-http-backend"
+#    lock_address   = "https://api.abbey.io/terraform-http-backend/lock"
+#    unlock_address = "https://api.abbey.io/terraform-http-backend/unlock"
+#    lock_method    = "POST"
+#    unlock_method  = "POST"
+#  }
 
   required_providers {
     abbey = {
       source = "abbeylabs/abbey"
-      version = "0.1.4"
+      version = "0.2.2"
     }
 
     github = {
@@ -22,6 +22,7 @@ terraform {
 
 provider "abbey" {
   # Configuration options
+  bearer_token = var.abbey_token
 }
 
 provider "github" {
@@ -53,21 +54,19 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
     ]
   }
 
-  policies = {
-    grant_if = [
-      {
-        # Optionally, you can build an OPA bundle and keep it in your repo.
-        # `opa build -b policies/common -o policies/common.tar.gz`
-        #
-        # If you do, you can then specify `bundle` with:
-        # bundle = "github://organization/repo/policies/common.tar.gz"
-        #
-        # Otherwise you can specify the directory. Abbey will build an
-        # OPA bundle for you and recursively add all your policies.
-        bundle = "github://organization/repo/policies"
-      }
-    ]
-  }
+  policies = [
+    {
+      # Optionally, you can build an OPA bundle and keep it in your repo.
+      # `opa build -b policies/common -o policies/common.tar.gz`
+      #
+      # If you do, you can then specify `bundle` with:
+      # bundle = "github://organization/repo/policies/common.tar.gz"
+      #
+      # Otherwise you can specify the directory. Abbey will build an
+      # OPA bundle for you and recursively add all your policies.
+      bundle = "github://organization/repo/policies"
+    }
+  ]
 
   output = {
     # Replace with your own path pointing to where you want your access changes to manifest.
