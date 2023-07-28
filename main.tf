@@ -10,7 +10,7 @@ terraform {
   required_providers {
     abbey = {
       source = "abbeylabs/abbey"
-      version = "0.2.2"
+      version = "0.2.4"
     }
 
     github = {
@@ -73,9 +73,9 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
     # Path is an RFC 3986 URI, such as `github://{organization}/{repo}/path/to/file.tf`.
     location = "github://organization/repo/access.tf"
     append = <<-EOT
-      resource "github_team_membership" "gh_mem_{{ .data.system.abbey.secondary_identities.github.username }}" {
+      resource "github_team_membership" "gh_mem_{{ .data.system.abbey.identities.github.username }}" {
         team_id = github_team.pii_team.id
-        username = "{{ .data.system.abbey.secondary_identities.github.username }}"
+        username = "{{ .data.system.abbey.identities.github.username }}"
         role = "member"
       }
     EOT
@@ -83,20 +83,11 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
 }
 
 resource "abbey_identity" "user_1" {
-  name = "replace-me"
-
-  linked = jsonencode({
-    abbey = [
-      {
-        type  = "AuthId"
-        value = "replace-me@example.com"
-      }
-    ]
-
-    github = [
-      {
-        username = "replaceme"
-      }
-    ]
-  })
+  abbey_account = "replace-me@example.com"
+  source = "github"
+  metadata = jsonencode(
+    {
+      username = "replaceme" #CHANGEME
+    }
+  )
 }
