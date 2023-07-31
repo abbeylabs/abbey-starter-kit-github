@@ -26,19 +26,19 @@ provider "abbey" {
 }
 
 provider "github" {
-  owner = "abbeylabs"
+  owner = "replace-me" #CHANGEME
   token = var.token
 }
 
-resource "github_team" "pii_team" {
-  name = "PIITeam"
-  description = "This team has access to PII data."
+resource "github_team" "abbey_test_team" {
+  name = "AbbeyTestTeam"
+  description = "This team is testing Abbey."
 }
 
-resource "abbey_grant_kit" "engineering_pii_github_team" {
-  name = "GitHub Team: Engineering PII"
+resource "abbey_grant_kit" "engineering_abbey_test_github_team" {
+  name = "GitHub_Team_Abbey_Test"
   description = <<-EOT
-    This resource represents a GitHub Team Membership for engineers looking to access PII data.
+    This resource represents a GitHub Team Membership for engineers looking to test Abbey.
 
     This Grant Kit grants access and expires it automatically after 24 hours.
   EOT
@@ -74,7 +74,7 @@ resource "abbey_grant_kit" "engineering_pii_github_team" {
     location = "github://organization/repo/access.tf"
     append = <<-EOT
       resource "github_team_membership" "gh_mem_{{ .data.system.abbey.identities.github.username }}" {
-        team_id = github_team.pii_team.id
+        team_id = github_team.abbey_test_team.id
         username = "{{ .data.system.abbey.identities.github.username }}"
         role = "member"
       }
