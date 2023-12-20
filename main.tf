@@ -1,33 +1,9 @@
-terraform {
-  backend "http" {
-    address        = "https://api.abbey.io/terraform-http-backend"
-    lock_address   = "https://api.abbey.io/terraform-http-backend/lock"
-    unlock_address = "https://api.abbey.io/terraform-http-backend/unlock"
-    lock_method    = "POST"
-    unlock_method  = "POST"
-  }
+locals {
+  account_name = ""
+  repo_name = ""
 
-  required_providers {
-    abbey = {
-      source = "abbeylabs/abbey"
-      version = "0.2.4"
-    }
-
-    github = {
-      source = "integrations/github"
-      version = "5.28.0"
-    }
-  }
-}
-
-provider "abbey" {
-  # Configuration options
-  bearer_auth = var.abbey_token
-}
-
-provider "github" {
-  owner = "replace-me" #CHANGEME
-  token = var.token
+  project_path = "github://${local.account_name}/${local.repo_name}"
+  policies_path = "${local.project_path}/policies"
 }
 
 resource "github_team" "abbey_test_team" {
@@ -55,39 +31,17 @@ resource "abbey_grant_kit" "engineering_abbey_test_github_team" {
   }
 
   policies = [
-    {
-      # Optionally, you can build an OPA bundle and keep it in your repo.
-      # `opa build -b policies/common -o policies/common.tar.gz`
-      #
-      # If you do, you can then specify `bundle` with:
-      # bundle = "github://organization/repo/policies/common.tar.gz"
-      #
-      # Otherwise you can specify the directory. Abbey will build an
-      # OPA bundle for you and recursively add all your policies.
-      bundle = "github://organization/repo/policies"
-    }
+    { bundle = local.policies_path }
   ]
 
   output = {
-    # Replace with your own path pointing to where you want your access changes to manifest.
-    # Path is an RFC 3986 URI, such as `github://{organization}/{repo}/path/to/file.tf`.
-    location = "github://organization/repo/access.tf"
+    location = "${local.project_path}/access.tf"
     append = <<-EOT
-      resource "github_team_membership" "gh_mem_{{ .data.system.abbey.identities.github.username }}" {
+      resource "github_team_membership" "gh_mem_{{ .user.github.username }}" {
         team_id = github_team.abbey_test_team.id
-        username = "{{ .data.system.abbey.identities.github.username }}"
+        username = "{{ .user.github.username }}"
         role = "member"
       }
     EOT
   }
-}
-
-resource "abbey_identity" "user_1" {
-  abbey_account = "replace-me@example.com"
-  source = "github"
-  metadata = jsonencode(
-    {
-      username = "replaceme" #CHANGEME
-    }
-  )
 }
